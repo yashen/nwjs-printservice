@@ -25,20 +25,13 @@ printTasks();
 
 function printTask(task) {
 	isPrinting = true;
-	try{
-		var plugin = require("./plugins/" + task.Name).default;
-	}catch(ex){
-		alert(ex.message);
-		isPrinting = false;
-		return;
-	}
-	document.getElementById("root").innerHTML = plugin(task.Data);
+	document.getElementById("root").innerHTML = task;
 	window.print();
 	isPrinting = false;
 }
 
 socket.addEventListener('message', function (event) {
-	let task = JSON.parse(event.data);
+	let task = event.data;
 	addTask(task);
 });
 

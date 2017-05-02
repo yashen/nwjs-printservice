@@ -11,15 +11,16 @@ server.use(restify.bodyParser());
 server.post("/print/:name", function (req, res, next) {
   let name = req.params.name;
   var data = req.body;
-  tasks.push({
-    Name: name,
-    Data: data
-  });
-  res.send("OK")
-  next();
+  try {
+    var plugin = require('./plugins/' + name).default;
+    var task = plugin(data);
+    tasks.push(task);
+    res.send("OK");
+    next();
+  } catch (ex) {
+    return next(ex);
+  }
 });
-
-console.log(config);
 
 server.listen(config.port, function () {
   winston.info('PrintService listening at %s', server.url);
@@ -32,16 +33,16 @@ ws.createServer(function (conn) {
     if (str == "get") {
       var task = tasks.shift()
       if (task) {
-        conn.sendText(JSON.stringify(task));
+        conn.sendText(task);
       }
     }
   })
-  conn.on("error",function(){
+  conn.on("error", function () {
   });
   conn.on("close", function (code, reason) {
     clientConn = null;
     console.log("Connection closed")
   })
 }).listen(config["websocket-port"], function () {
-	console.log("Websocket Service started");
+  console.log("Websocket Service started");
 });
