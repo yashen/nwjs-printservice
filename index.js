@@ -8,41 +8,47 @@ socket.addEventListener('open', function (event) {
 });
 var tasks = [];
 
-function addTask(task){
+function addTask(task) {
 	tasks.push(task);
 }
 
-function printTasks(){
-	if(!isPrinting){
+function printTasks() {
+	if (!isPrinting) {
 		var task = tasks.shift();
-		if(task){
+		if (task) {
 			printTask(task);
 		}
-
 	}
-	setTimeout(printTasks,500);
+	setTimeout(printTasks, 500);
 }
 printTasks();
 
-function printTask(task){
+function printTask(task) {
 	isPrinting = true;
-	document.getElementById("root").innerHTML = JSON.stringify(task);
+	try{
+		var plugin = require("./plugins/" + task.Name).default;
+	}catch(ex){
+		alert(ex.message);
+		isPrinting = false;
+		return;
+	}
+	document.getElementById("root").innerHTML = plugin(task.Data);
 	window.print();
 	isPrinting = false;
 }
 
 socket.addEventListener('message', function (event) {
-	let task= JSON.parse(event.data);
+	let task = JSON.parse(event.data);
 	addTask(task);
 });
 
-function getPrintTask(){
+function getPrintTask() {
 	socket.send("get");
-	setTimeout(getPrintTask,500);
+	setTimeout(getPrintTask, 500);
 }
 
 socket.addEventListener('open', function (event) {
-	 getPrintTask();
+	getPrintTask();
 });
 
 
