@@ -1,0 +1,20 @@
+{
+  "name": "nwjs-printservice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "bg-script": "background.js",
+  "scripts": {
+    "start": "nw --kiosk-printing ."
+  },
+  "author": "yashen@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "nodejs-websocket": "^1.7.1",
+    "restify": "^4.3.0",
+    "winston": "^2.3.1"
+  },
+	"window":{
+		"show":true
+	}
+}
